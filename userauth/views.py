@@ -7,9 +7,11 @@ from .forms import CustomUserCreationForm
 from rest_framework.authtoken.views import ObtainAuthToken, Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
 from django.contrib import messages
-from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth.decorators import login_required
+
 
 
 def signup(request):
@@ -28,7 +30,6 @@ def signup(request):
         return render(request, 'userauth/signup.html',{'form':form})
 
 def login(request):
-
         if request.method == 'POST':
                 username = request.POST['username']
                 password = request.POST['password']
@@ -36,13 +37,14 @@ def login(request):
                 user = authenticate(request, username=username, password=password)
 
                 if user is not None:
-                        token, created = Token.objects.get_or_create(user=user)
-                        return redirect('home')
+                        auth_login(request, user)
+                        return redirect('success')
                 else:
                         messages.error(request,"Invalid credentials")
                         return redirect('login')
 
         return render(request, 'userauth/login.html',{})
 
-def home(request):
-        return render(request, 'userauth/home.html')
+@login_required
+def success(request):
+        return render(request, 'userauth/success.html')
