@@ -6,10 +6,10 @@ This repository demonstrates a complete Django REST API with token authenticatio
 ## Features
 
 - **User Registration (Signup):**  
-  A custom signup form to register new users.
+  A custom signup form to register new users. An authentication token upon user creation.
 
 - **User Login:**  
-  A login form that authenticates users and generates an authentication token.
+  A login form that authenticates users.
 
 - **Token Authentication:**  
   Integration with DRF's Token model to secure API endpoints.
