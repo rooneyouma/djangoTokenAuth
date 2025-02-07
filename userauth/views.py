@@ -6,17 +6,11 @@ from django.contrib.auth.models import User
 from .forms import CustomUserCreationForm
 from rest_framework.authtoken.views import ObtainAuthToken, Token
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from rest_framework.exceptions import AuthenticationFailed
 
-@api_view(['POST'])
-# @authentication_classes([TokenAuthentication])
-# @permission_classes([IsAuthenticated])
-def userList(request):
-        usernames = [user.username for user in User.objects.all()]
-        return Response(usernames)
-
-
-############ SIGNUP/LOGIN ############
 
 def signup(request):
         if request.method == 'POST':
@@ -34,4 +28,21 @@ def signup(request):
         return render(request, 'userauth/signup.html',{'form':form})
 
 def login(request):
+
+        if request.method == 'POST':
+                username = request.POST['username']
+                password = request.POST['password']
+
+                user = authenticate(request, username=username, password=password)
+
+                if user is not None:
+                        token, created = Token.objects.get_or_create(user=user)
+                        return redirect('home')
+                else:
+                        messages.error(request,"Invalid credentials")
+                        return redirect('login')
+
         return render(request, 'userauth/login.html',{})
+
+def home(request):
+        return render(request, 'userauth/home.html')
