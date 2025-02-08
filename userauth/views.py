@@ -48,3 +48,5 @@ def login(request):
 @login_required
 def success(request):
         return render(request, 'userauth/success.html')
+
+
